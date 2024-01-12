@@ -1,6 +1,10 @@
-first_name = input("Enter user first name:")
-last_name = input("Enter user last name:")
+# Starter code
+# YOUDO:  create first_name and last_name variable and
+# assign values using the input function
+first_name = ""
+last_name = ""
 
 sep = " "
-full_name = sep.join([first_name, last_name])
+full_name = ""  # YOUDO use the join function to
+# join together first_name and last_name
 print(full_name)
