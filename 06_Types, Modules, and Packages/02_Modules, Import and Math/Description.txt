@@ -1,3 +1,2 @@
 We are going to make a little bit of code to handle finding the hypotenuse of
 a right triangle from user input.  
-
