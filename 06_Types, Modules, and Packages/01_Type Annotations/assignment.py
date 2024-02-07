@@ -1,7 +1,7 @@
 #add type annotation on the functions and variables
 #variables types are float, function return type is a float
 
-def average(a, b):
+def average(a, b) -> float:
     return (a + b) / 2
 
 number1 = float(input("Enter a decimal number: "))
