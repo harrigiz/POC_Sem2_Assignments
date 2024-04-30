@@ -8,9 +8,14 @@ grid = [
     ["36", "37","38","39","40","41","42"]
 ]
 
-current_piece = "R", "Y"
+current_piece = "R", 
+
+col_header = ["1","2", "3", "4", "5", "6", "7"]
 
 def print_grid():
+    for item in col_header:
+        print(item, " ")
+    print()
     for row in range(len(grid)):
         for col in range(len(grid[row])):
             if col != 2:
@@ -19,7 +24,7 @@ def print_grid():
                 print(grid[row][col])
                 print()
 
-def is_bad_choice_string(choice : str):
+def is_bad_num_string(choice : str):
     if (choice.isnumeric() and int(choice) >= 1 and int(choice) <= 9):
         return False
     return True
@@ -148,31 +153,12 @@ def check_game_over():
 
 def game_loop():
     global current_piece
-    print("Welcome to TIC TAC TOE")
-    user_choice = ""
-    while(True):
-        print_grid()
-        while(is_bad_choice_string(user_choice)):
-            user_choice = input("Enter STOP to end.  Or a number (1-9) where to put the piece: ")
-        if user_choice.__eq__("STOP"):
-            break
-        grid_spot = int(user_choice)
-        place_piece(grid_spot)
-        if(check_game_over()):
-            print_grid()
-            break
-        current_piece = "Y" if current_piece.__eq__("R") else "R"
-        user_choice = ""
-    print("GAME OVER")
-
-def game_loop():
-    global current_piece
     print("LET'S PLAY CONNECT 4!")
     user_choice = ""
     while(True):
         print_grid()
         while((user_choice)):
-            user_choice = input("Enter STOP to end.  Or a number (1 - 42) where to put the piece: ")
+            user_choice = input("Enter STOP to end.  Or a number (1 - 7) where to put the piece: ")
         if user_choice.__eq__("STOP"):
             break
         grid_spot = int(user_choice)
