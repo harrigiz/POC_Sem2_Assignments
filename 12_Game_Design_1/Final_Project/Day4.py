@@ -4,12 +4,60 @@ class Game(tk.Frame):
     def __init__(self, master):
         super(Game, self).__init__(master)
         self.lives = 3
-        self.width = 600
+        self.width = 610
         self.height = 400
         self.bg = "#AAAAFF"
         self.canvas = tk.Canvas(self, width=self.width, height=self.height, bg=self.bg)        
         self.canvas.pack()
         self.pack()
+
+        self.items = {}
+        self.ball = None
+        self.paddle = Paddle(self.canvas, self.width / 2, 326)
+        self.items[self.paddle.item] = self.paddle
+
+        for x in range(5, self.width - 75, 75):
+            self.add_brick(x + 37.5, 50, 2)
+            self.add_brick(x + 37.5, 70, 1)
+            self.add_brick(x + 37.5, 90, 1)
+
+        self.hud = None
+        self.setup_game()
+        self.canvas.focus_set()
+        self.canvas.bind("<Left>", lambda _: self.paddle.move(-10))
+        self.canvas.bind("<Right>", lambda _: self.paddle.move(10))
+
+    def setup_game(self):
+        self.add_ball()
+        self.update_lives_text()
+        self.text = self.draw_text(300, 200, "Press Space to start")
+        self.canvas.bind("<space>", lambda _: self.start_game())
+
+    def add_ball(self):
+        if self.ball is not None:
+            self.ball.delete()
+        paddle_coords = self.paddle.get_position()
+        x = (paddle_coords[0] + paddle_coords[2]) / 2
+        self.ball = Ball(self.canvas, x, 310)
+        self.paddle.set_ball(self.ball)
+
+    def add_brick(self, x, y, hits):
+        brick = Brick(self.canvas, x, y, hits)
+        self.items[brick.item] = brick
+
+    def draw_text(self, x, y, text, size="40"):
+        font = ("Helvetica", size)
+        return self.canvas.create_text(x, y, text=text, font=font)
+    
+    def update_lives_text(self):
+        text = "Lives: %s" % self.lives
+        if self.hud == None:
+            self.hud = self.draw_text(50, 20, text, 15)
+        else:
+            self.canvas.itemconfig(self.hud, text=text)
+
+    def start_game(self):
+        pass
 
 class GameObject(object):
     def __init__(self, canvas, item):
@@ -25,20 +73,16 @@ class GameObject(object):
     def delete(self):
         self.canvas.delete(self.item)
 
-    def update(self):
-
-
 class Ball(GameObject):
-    def __init__(self, canvas, x, y):  
+    def __init__(self, canvas, x, y):  #(x, y) is the center of the ball
         self.radius = 10 
-        self.direction = [1, -1]
-        #This represents the speed of the ball in the x and y direction.  Example:  [xspeed, yspeed]  
+        self.direction = [1, -1] 
         self.speed = 10 
         x1 = x - self.radius
         y1 = y - self.radius
         x2 = x + self.radius
         y2 =  y + self.radius  
-        color = white
+        color = "#FFFFFF"
         item = canvas.create_oval(x1, y1, x2, y2, fill=color)
         super(Ball, self).__init__(canvas, item)
 
@@ -51,8 +95,8 @@ class Paddle(GameObject):
         y1 = self.height / 2 
         x2 = x + self.width / 2 
         y2 = y + self.height / 2
-        color = blue 
-        ###canvas.create_rectangle =  x1,y1, x2, y2, color
+        color = "#0000FF"
+        canvas.create_rectangle = x1,y1, x2, y2,color
         super(Paddle, self).__init__(canvas, item)
         
 
@@ -83,16 +127,17 @@ class Brick(GameObject):
         y1 = y - self.height / 2
         x2 = x + self.width / 2
         y2 = self.height / 2
-        #canvas.crate_rectangle = x1, y1, x2, y2, color, tags="brick"        
+        canvas.create_rectangle = x1, y1, x2, y2, color, tags="brick"        
         super(Brick, self).__init__(canvas, item)
 
-    ##def hit(self):
+    def hit(self):
         self.hits = 1 - self.hits 
-    ##if(self.hits.__eq__("0")):
-        ##call self.delete()
-        #YOUDO-27:  check if self.hits is equal to 0.  If it is call self.delete().  If not 
-        ##self.canvas.itemconfig(self.item, fill=Brick.COLORS[self.hits])
-        pass #YOUDO-28:  Remove this pass
+        if(self.hits.__eq__("0")):
+            self.delete()
+        if(self.hits.__eq__("0")):
+            self.delete()
+        if (self.hits is not ("0")):
+            self.canvas.itemconfig(self.item, fill=Brick.COLORS[self.hits])
 
 
 if __name__ == "__main__":    

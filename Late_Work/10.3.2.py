@@ -12,7 +12,7 @@ try:
     stream.read('8')
     stream.read('9')
     stream.read('10')
-    stream.read()
+    print(stream.read())
     stream.close()
 except:
     print(file_path)
