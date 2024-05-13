@@ -127,7 +127,7 @@ class Brick(GameObject):
         y1 = y - self.height / 2
         x2 = x + self.width / 2
         y2 = self.height / 2
-        canvas.create_rectangle = x1, y1, x2, y2, color, tags="brick"        
+        create_rectangle = x1, y1, x2, y2, color, tags="brick"        
         super(Brick, self).__init__(canvas, item)
 
     def hit(self):
