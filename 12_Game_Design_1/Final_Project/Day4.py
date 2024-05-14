@@ -57,24 +57,36 @@ class Game(tk.Frame):
             self.canvas.itemconfig(self.hud, text=text)
 
     def start_game(self):
-        pass
+        self.canvas.unbind("<space>")
+        self.canvas.delete(self.text)
+        self.paddle.ball = None
+        self.game_loop()
 
-class GameObject(object):
-    def __init__(self, canvas, item):
-        self.canvas = canvas
-        self.item = item
+    def game_loop(self):
+        #YOUDO-36:  call self's check_collisions method
+        num_bricks = len(self.canvas.find_withtag("brick"))
+        if num_bricks == 0:
+            self.ball.speed = None 
+            self.draw_text(300, 200, "You win!")
+        elif self.ball.get_position()[3] >= self.height:
+            self.ball.speed = None
+            self.lives -= 1
+            if self.lives < 0:
+                self.draw_text(300, 200, "Game Over")
+            else:
+                self.after(1000, self.setup_game)
+        else:
+            self.ball.update()
+            self.after(50, self.game_loop())
 
-    def get_position(self):
-        return self.canvas.coords(self.item)
-    
-    def move(self, x, y):
-        self.canvas.move(self.item, x, y)
-
-    def delete(self):
-        self.canvas.delete(self.item)
+    def check_collisions(self):
+        self.get_position #YOUDO_38:  get the ball's coords from self.get_position and store in ball_coords
+        items = self.canvas.find_overlapping(*ball_coords)
+        objects = [self.items[x] for x in items if x in self.items]
+        self.ball.collide(objects)
 
 class Ball(GameObject):
-    def __init__(self, canvas, x, y):  #(x, y) is the center of the ball
+    def __init__(self, canvas, x, y):  
         self.radius = 10 
         self.direction = [1, -1] 
         self.speed = 10 
@@ -85,6 +97,38 @@ class Ball(GameObject):
         color = "#FFFFFF"
         item = canvas.create_oval(x1, y1, x2, y2, fill=color)
         super(Ball, self).__init__(canvas, item)
+
+ def update(self):
+        #YOUDO-28:  create a coords variable and initialize to self.get_position()
+        #YOUDO-29:  create a width variable and initialize to self.canvas.winfo_width()
+        if coords[0] <= 0 or coords[2] >= width:
+            self.direction[0] *= -1
+        if coords[1] <= 0:
+            self.direction[1] *= -1
+        x = self.direction[0] * self.speed
+        y = self.direction[1] * self.speed
+        #YOUDO_30:  call the move method for self passing in the appropriate arguments
+
+    def collide(self, game_objects):
+        #YOUDO-30:  same logic as YOUDO-28
+        #YOUDO-31:  create a variable x for the center of the ball.  so you'll need coords[0] and coords[2] and math midpoint stuff :)
+        if len(game_objects) > 1:
+            #YOUDO-32:  flip the direction like we did in update for the y direction (index 1)
+            pass  #YOUDO-33:  remove this when done
+        elif len(game_objects) == 1:
+            game_object = game_objects[0]
+            #YOUDO-34:  create a coords variable for game_object from get_position like before
+            if x > coords[2]:
+                self.direction[0] = 1
+            elif x < coords[0]:
+                self.direction[0] = -1
+            else:
+                self.direction[1] *= -1 
+        
+        for game_object in game_objects:
+            if(isinstance(game_object, Brick)):
+                game_object.hit()
+
 
 class Paddle(GameObject):
     def __init__(self, canvas, x, y): 
@@ -118,7 +162,7 @@ class Paddle(GameObject):
 class Brick(GameObject):
     COLORS = {1 : "#999999", 2 : "#555555", 3 : "#222222"}
 
-    def __init__(self, canvas, x, y, hits):
+def __init__(self, canvas, x, y, hits):
         self.width = 75 
         self.height = 20 
         self.hits = hits
@@ -130,7 +174,7 @@ class Brick(GameObject):
         create_rectangle = x1, y1, x2, y2, color, tags="brick"        
         super(Brick, self).__init__(canvas, item)
 
-    def hit(self):
+def hit(self):
         self.hits = 1 - self.hits 
         if(self.hits.__eq__("0")):
             self.delete()
